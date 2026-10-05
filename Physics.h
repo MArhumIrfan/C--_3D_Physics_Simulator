@@ -48,14 +48,6 @@ struct Quant {
     float z = 0.0f;
 };
 
-struct Contact {
-    Vec3 point;       // world-space contact point
-    Vec3 normal;      // contact normal
-    Vec3 rA;
-    Vec3 rB;
-    float penetration = 0.0f;
-    float impulse = 0.0f;
-};
 
 struct RigidBody {
     Vec3 position;

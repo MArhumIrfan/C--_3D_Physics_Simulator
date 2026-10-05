@@ -39,19 +39,42 @@ inline float clampf(float v, float lo, float hi) { return v < lo ? lo : (v > hi 
 // every body currently collides as a sphere of `radius`.
 enum class Shape { Sphere = 0, Box = 1, Mesh = 2 };
 
+// Minimal quaternion type used for mesh orientation. The physics layer itself
+// does not depend on it for collision detection.
+struct Quant {
+    float w = 1.0f;
+    float x = 0.0f;
+    float y = 0.0f;
+    float z = 0.0f;
+};
+
+struct Contact {
+    Vec3 point;       // world-space contact point
+    Vec3 normal;      // contact normal
+    Vec3 rA;
+    Vec3 rB;
+    float penetration = 0.0f;
+    float impulse = 0.0f;
+};
+
 struct RigidBody {
     Vec3 position;
     Vec3 prevPosition;      // previous fixed step, for render interpolation
     Vec3 velocity;
     Vec3 acceleration;
     Vec3 forceAccumulator;
+    Vec3 angularVelocity;
+    Vec3 torqueAccumulator;
 
+    float invInertia = 1.0f;   // 0 = static / immovable
     float mass = 1.0f;
     float inverseMass = 1.0f;   // 0 = static / immovable
     float radius = 0.5f;
     float restitution = 0.5f;   // bounciness
     float friction = 0.4f;      // Coulomb coefficient
-    bool  grounded = false;     // touching walkable terrain this step
+    bool grounded = false;      // touching walkable terrain this step
+
+    Quant orientation;   // for mesh rotation, not used for collision
 
     void setMass(float m) {
         if (m <= 0.0f) { mass = 0.0f; inverseMass = 0.0f; }
